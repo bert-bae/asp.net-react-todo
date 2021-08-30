@@ -28,3 +28,5 @@
 /root/projects/simple-todo/server/obj/Debug/net5.0/server.pdb
 /root/projects/simple-todo/server/obj/Debug/net5.0/server.genruntimeconfig.cache
 /root/projects/simple-todo/server/bin/Debug/net5.0/omnisharp.json
+/root/projects/simple-todo/server/bin/Debug/net5.0/AutoMapper.dll
+/root/projects/simple-todo/server/bin/Debug/net5.0/AutoMapper.Extensions.Microsoft.DependencyInjection.dll

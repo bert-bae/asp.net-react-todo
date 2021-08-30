@@ -5,16 +5,21 @@ import { deleteTask, toggleTask, updateDescription } from "../task-list.slice";
 import { Task } from "../task-types";
 
 const TaskRow: React.FC<Task> = (props) => {
-  const [show, setShow] = React.useState(!props.completed);
+  const [show, setShow] = React.useState(!props.isComplete);
   const dispatch = useDispatch();
-
   return (
-    <div className={clsx("task-row", props.completed && "completed")}>
+    <div className={clsx("task-row", props.isComplete && "isComplete")}>
       <h5>{props.name}</h5>
-      {props.completed && <div className="done-icon">Done</div>}
+      {props.isComplete && <div className="done-icon">Done</div>}
       <div className="task-actions">
-        <button onClick={() => dispatch(toggleTask(props.id))}>
-          Mark as {props.completed ? "Incomplete" : "Complete"}
+        <button
+          onClick={() =>
+            dispatch(
+              toggleTask({ id: props.id, isComplete: !props.isComplete })
+            )
+          }
+        >
+          Mark as {props.isComplete ? "Incomplete" : "Complete"}
         </button>
         <button
           aria-label="toggle-task-details"
@@ -30,7 +35,14 @@ const TaskRow: React.FC<Task> = (props) => {
           <textarea
             rows={5}
             value={props.description}
-            onChange={(e) => dispatch(updateDescription(e.target.value))}
+            onChange={(e) =>
+              dispatch(
+                updateDescription({
+                  id: props.id,
+                  description: e.target.value,
+                })
+              )
+            }
           />
         </>
       )}

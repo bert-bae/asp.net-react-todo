@@ -38,6 +38,7 @@ namespace server
           builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
         });
       });
+      services.AddAutoMapper(typeof(Startup));
       services.AddControllers();
     }
 

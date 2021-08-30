@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using TaskList.Models;
 using TaskList.Services;
@@ -10,9 +10,14 @@ namespace TaskList.Controllers
   [Route("[controller]")]
   public class TaskController : ControllerBase
   {
-    public TaskController()
+    private readonly IMapper _mapper;
+    public TaskController(IMapper mapper)
     {
-
+      var config = new MapperConfiguration(cfg => cfg.CreateMap<TaskDto, Task>()
+        .ForMember(dest => dest.name, opt => opt.Condition((src, dest) => src.name != null))
+        .ForMember(dest => dest.description, opt => opt.Condition((src, dest) => src.description != null))
+        .ForMember(dest => dest.isComplete, opt => opt.Condition((src, dest) => src.isComplete != null)));
+      _mapper = config.CreateMapper();
     }
 
     [HttpGet]
@@ -60,13 +65,10 @@ namespace TaskList.Controllers
         return NotFound();
       }
 
-      var updatedTask = new Task
-      {
-        id = id,
-        name = data.name,
-        isComplete = data.isComplete,
-        description = data.description
-      };
+      var updatedTask = _mapper.Map<TaskDto, Task>(
+        data,
+        existingTask
+      );
       TaskService.Update(updatedTask);
       return Ok(updatedTask);
     }

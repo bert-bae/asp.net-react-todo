@@ -29,6 +29,27 @@ export const deleteTask = createAsyncThunk<{ id: string }, string>(
   }
 );
 
+export const toggleTask = createAsyncThunk<
+  Pick<Task, "id" | "isComplete">,
+  Pick<Task, "id" | "isComplete">
+>("taskList/toggleTask", async ({ id, isComplete }) => {
+  await apiClient.put(`/task/${id}`, { isComplete });
+  console.log("hello");
+  console.log(isComplete);
+  return { id, isComplete };
+});
+
+export const updateDescription = createAsyncThunk<
+  Pick<Task, "id" | "description">,
+  Pick<Task, "id" | "description">
+>("taskList/updateDescription", async ({ id, description }) => {
+  await apiClient.put(`/task/${id}`, { description });
+  return {
+    id,
+    description,
+  };
+});
+
 const initialState: { tasks: Record<string, Task>; loading: boolean } = {
   tasks: {},
   loading: false,
@@ -38,27 +59,13 @@ const taskListSlice = createSlice({
   name: "taskList",
   initialState,
   reducers: {
-    toggleTask(state, action) {
-      const task = state.tasks[action.payload];
-      if (task) task.completed = !task.completed;
-    },
     updateDescription(state, action) {
       const task = state.tasks[action.payload];
       if (task) task.description = action.payload;
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchTasks.pending, (state) => {
-      state.loading = true;
-    });
-    builder.addCase(fetchTasks.rejected, (state) => {
-      state.loading = false;
-      alert("Request failed");
-    });
-    builder.addCase(fetchTasks.fulfilled, (state, action) => {
-      state.loading = false;
-      state.tasks = action.payload;
-    });
+    // Add
     builder.addCase(addTask.pending, (state) => {
       state.loading = true;
     });
@@ -70,20 +77,29 @@ const taskListSlice = createSlice({
       const taskId = action.payload.id as string;
       state.tasks[taskId] = action.payload;
     });
-    builder.addCase(deleteTask.pending, (state) => {
-      state.loading = true;
-    });
-    builder.addCase(deleteTask.rejected, (state) => {
+    // Get ALL
+    builder.addCase(fetchTasks.fulfilled, (state, action) => {
       state.loading = false;
-      alert("Request failed");
+      state.tasks = action.payload;
     });
+    // Delete
     builder.addCase(deleteTask.fulfilled, (state, action) => {
       const taskId = action.payload.id;
       delete state.tasks[taskId];
     });
+    // Toggle Complete
+    builder.addCase(toggleTask.fulfilled, (state, action) => {
+      const { id, isComplete } = action.payload;
+      const task = state.tasks[id];
+      task.isComplete = isComplete;
+    });
+    // Update description of task
+    builder.addCase(updateDescription.fulfilled, (state, action) => {
+      const { id, description } = action.payload;
+      const task = state.tasks[id];
+      task.description = description;
+    });
   },
 });
-
-export const { toggleTask, updateDescription } = taskListSlice.actions;
 
 export default taskListSlice.reducer;
