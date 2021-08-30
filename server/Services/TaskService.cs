@@ -1,6 +1,6 @@
-using TaskList.Models;
 using System.Collections.Generic;
 using System.Linq;
+using TaskList.Models;
 
 namespace TaskList.Services
 {
@@ -22,7 +22,7 @@ namespace TaskList.Services
       task.id = System.Guid.NewGuid();
       Tasks.Add(task);
     }
-    public static void delete(System.Guid id)
+    public static void Delete(System.Guid id)
     {
       var task = Get(id);
       if (task is Task)

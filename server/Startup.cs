@@ -16,7 +16,7 @@ namespace server
 {
   public class Startup
   {
-    readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+    readonly string CorsPolicy = "_myCorsPolicy";
     public Startup(IConfiguration configuration)
     {
       Configuration = configuration;
@@ -27,19 +27,18 @@ namespace server
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-
-      services.AddControllers();
       services.AddSwaggerGen(c =>
       {
         c.SwaggerDoc("v1", new OpenApiInfo { Title = "server", Version = "v1" });
       });
       services.AddCors(options =>
       {
-        options.AddPolicy(MyAllowSpecificOrigins, builder =>
+        options.AddPolicy(CorsPolicy, builder =>
         {
-          builder.WithOrigins("http://localhost:3000");
+          builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
         });
       });
+      services.AddControllers();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,11 +51,11 @@ namespace server
         app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "server v1"));
       }
 
+      app.UseCors(CorsPolicy);
+
       app.UseRouting();
 
       app.UseAuthorization();
-
-      app.UseCors(MyAllowSpecificOrigins);
 
       app.UseEndpoints(endpoints =>
       {

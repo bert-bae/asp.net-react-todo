@@ -1,5 +1,4 @@
 import React from "react";
-import { nanoid } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from "react-redux";
 import { addTask, fetchTasks } from "./task-list.slice";
 import { selectTasks } from "./task-list.selectors";
@@ -21,7 +20,7 @@ const TaskList = () => {
       <h3>Task List</h3>
       <TaskForm
         submitLabel="Add"
-        onClick={(name: string) => dispatch(addTask({ name, id: nanoid() }))}
+        onClick={(name: string) => dispatch(addTask({ name }))}
       />
       {tasks.map((t) => {
         return <TaskRow {...t} key={t.id} />;

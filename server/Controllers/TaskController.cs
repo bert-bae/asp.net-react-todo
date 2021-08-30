@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using TaskList.Services;
 using TaskList.Models;
+using TaskList.Services;
 
 namespace TaskList.Controllers
 {
@@ -21,7 +21,7 @@ namespace TaskList.Controllers
       return TaskService.GetAll();
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id}", Name = "GetTaskById")]
     public ActionResult<Task> Get(System.Guid id)
     {
       var task = TaskService.Get(id);
@@ -43,7 +43,7 @@ namespace TaskList.Controllers
       var id = System.Guid.NewGuid();
       task.id = id;
       TaskService.Add(task);
-      return CreatedAtRoute(nameof(task), new { id = id, name = task.name });
+      return CreatedAtRoute("GetTaskById", new { id = id }, task);
     }
 
     [HttpPut("{id}", Name = nameof(Update))]
@@ -69,6 +69,13 @@ namespace TaskList.Controllers
       };
       TaskService.Update(updatedTask);
       return Ok(updatedTask);
+    }
+
+    [HttpDelete("{id}")]
+    public IActionResult Delete([FromRoute] System.Guid id)
+    {
+      TaskService.Delete(id);
+      return Ok(new { id = id });
     }
   }
 }
